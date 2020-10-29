@@ -283,7 +283,7 @@ documentation for the respective helper func definitions.
 #### Packing Templates
 
 The base `xo` templates are bin packed so that they are always available to the
-built `xo` binary using [`go-bindata`](https://github.com/jteeuwen/go-bindata) (via
+built `xo` binary using [`go-bindata`](https://github.com/go-bindata/go-bindata) (via
 the [`tpl.sh`](tpl.sh) script) and need to be regenerated/included in any
 changeset when submitting any template changes to the `xo` project.
 
