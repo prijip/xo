@@ -51,33 +51,25 @@ func ({{ $short }} *{{ .Name }}) Insert(db XODB) error {
 		return err
 	}
 
-	// set existence
-	{{ $short }}._exists = true
 {{ else }}
-	// sql insert query, primary key provided by identity
+	// sql insert query, primary key provided by sequence
 	const sqlstr = `INSERT INTO {{ $table }} (` +
 		`{{ colnames .Fields .PrimaryKey.Name }}` +
 		`) VALUES (` +
 		`{{ colvals .Fields .PrimaryKey.Name }}` +
-		`)`
+		`); SELECT SCOPE_IDENTITY()`
 
 	// run query
 	XOLog(sqlstr, {{ fieldnames .Fields $short .PrimaryKey.Name }})
-	res, err := db.Exec(sqlstr, {{ fieldnames .Fields $short .PrimaryKey.Name }})
+	err = db.QueryRow(sqlstr, {{ fieldnames .Fields $short .PrimaryKey.Name }}).Scan(&{{ $short }}.{{ .PrimaryKey.Name }})
 	if err != nil {
 		return err
 	}
 
-	// retrieve id
-	id, err := res.LastInsertId()
-	if err != nil {
-		return err
-	}
-
-	// set primary key and existence
-	{{ $short }}.{{ .PrimaryKey.Name }} = {{ .PrimaryKey.Type }}(id)
-	{{ $short }}._exists = true
 {{ end }}
+
+	// set existence
+	{{ $short }}._exists = true
 
 	return nil
 }
